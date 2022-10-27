@@ -2,7 +2,7 @@ from telethon import TelegramClient, events, sync
 from telethon.events import NewMessage
 
 from utils import createID,get_file_size,sizeof_fmt
-from threads import ThreadAsync
+from threads import ThreadAsync,Thread
 from worker import async_worker
 
 import asyncio
@@ -85,10 +85,9 @@ async def download_progress(dl, filename, currentBits, totalBits, speed, totalti
     except Exception as ex:
         print(str(ex))
 
-@async_worker
-async def edit_in_loop(bot,ev,message,text):
-    await bot.edit_message(message=message,text=msg)
 
+STORE_UPLOADER = {}
+STORE_RESULT = {}
 def upload_progress(filename, currentBits, totalBits, speed, totaltime, args):
     try:
         bot = args[0]
@@ -104,12 +103,15 @@ def upload_progress(filename, currentBits, totalBits, speed, totaltime, args):
             msg += '⤴️ Subido: ' + sizeof_fmt(currentBits) + '\n'
             msg += '🚀 Velocidad: ' + sizeof_fmt(speed) + '/s\n'
             msg += '⏱ Tiempo de Descarga: ' + str(time.strftime('%H:%M:%S', time.gmtime(totaltime))) + 's\n\n'
-            #loop.create_task(edit_in_loop(bot,ev,message,msg))
+            STORE_UPLOADER[filename] = msg
 
     except Exception as ex:
         print(str(ex))
 
-async def onmessage(bot:TelegramClient,ev: NewMessage.Event,loop):
+async def onmessage(bot:TelegramClient,ev: NewMessage.Event,loop,ret=False):
+
+    if ret:return
+
     username = ev.message.chat.username
     text = ev.message.text
 
@@ -248,9 +250,28 @@ async def onmessage(bot:TelegramClient,ev: NewMessage.Event,loop):
                       await bot.edit_message(ev.chat,message,text=f'{listdir[index]} Demasiado Grande, Debe Comprimir\nSe Cancelo La Subida')
                       return
                   await bot.edit_message(ev.chat,message,text=f'⬆️Subiendo {listdir[index]}...')
-                  result:RepoUploaderResult = await session.upload_file(ffullpath,progress_func=upload_progress,progress_args=(bot,ev,message,loop))
-                  if result:
-                      resultlist.append(result)
+                  result:RepoUploaderResult = None
+                  def uploader_func():
+                      result = session.upload_file(ffullpath,progress_func=upload_progress,progress_args=(bot,ev,message,loop))
+                      STORE_UPLOADER[listdir[index]] = None
+                      if result:
+                        STORE_RESULT[listdir[index]] = result
+                  tup = Thread(uploader_func)
+                  tup.start()
+                  try:
+                      while True:
+                          try:
+                              msg = STORE_UPLOADER[listdir[index]]
+                              if msg is None:break
+                              await bot.edit_message(ev.chat,message,msg)
+                          except:pass
+                          pass
+                  except:pass
+                  STORE_UPLOADER.pop(listdir[index])
+                  try:
+                      resultlist.append(STORE_RESULT[listdir[index]])
+                      STORE_RESULT.pop(listdir[index])
+                  except:pass
                   index+=1
             txtsendname = f'{username}.txt'
             if txtname!='':
@@ -289,11 +310,12 @@ def init():
             except:
                 loopevent = None
 
+        @async_worker
         @bot.on(events.NewMessage()) 
         async def process(ev: events.NewMessage.Event):
            await onmessage(bot,ev,loopevent)
            #await onmessage(bot,ev)
-           #loopevent.create_task(onmessage(None,bot,ev))
+           #loopevent.create_task(onmessage(bot,ev,loopevent))
            #t = ThreadAsync(loop=loopevent,targetfunc=onmessage,args=(loopevent,bot,ev))
            #t.start()
 

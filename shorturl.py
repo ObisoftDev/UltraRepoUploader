@@ -13,8 +13,11 @@ def parse(url):
         soup = BeautifulSoup(resp.text,'html.parser')
         return soup.find('input',{'id':'short_url'})['value']
     except Exception as ex:
+        print(str(ex))
         return url
 
 
-#url = parse('http://nuevaurl.com/asdasd')
+#url1 = parse('https://repotematico.uo.edu.cu/sites/default/files/Paquete_contenido/AgADOwMAAm3wcEc_part1.rar')
+#url2 = parse('https://repotematico.uo.edu.cu/sites/default/files/Paquete_contenido/AgADOwMAAm3wcEc_part2.rar')
+#url3 = parse('https://repotematico.uo.edu.cu/sites/default/files/Paquete_contenido/AgADOwMAAm3wcEc_part3.rar')
 #print(url)
