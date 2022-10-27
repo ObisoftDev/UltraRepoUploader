@@ -5,3 +5,4 @@ requests_toolbelt
 user_agent
 youtube_dl
 python-worker
+bs4
