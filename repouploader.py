@@ -118,7 +118,7 @@ class RepoUploader(object):
         self.log = log
         self.upload_data = None
         pass
-    async def upload_file(self,path,progress_func=None,progress_args=None):
+    def upload_file(self,path,progress_func=None,progress_args=None):
         if not self.upload_data:
             urlup = f'{self.host}node/add/objetos-de-aprendizaje'
             resp = self.session.get(urlup,headers=self.headers,proxies=self.proxies)
