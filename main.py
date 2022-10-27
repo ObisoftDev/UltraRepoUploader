@@ -265,7 +265,10 @@ def init():
 
         print('Bot is Started!')
 
-        loopevent = asyncio.get_event_loop();
+        try:
+            loopevent = asyncio.get_event_loop();
+        except:
+            loopevent = asyncio.get_runing_loop();
 
         @bot.on(events.NewMessage()) 
         async def process(ev: events.NewMessage.Event):
