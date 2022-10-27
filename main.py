@@ -243,7 +243,7 @@ async def onmessage(bot:TelegramClient,ev: NewMessage.Event,loop,ret=False):
             await bot.edit_message(ev.chat,message,text=f'📯Generando Session...')
             session:RepoUploader = await repouploader.create_session(config.PROXY)
             resultlist = []
-            txtsendname = str(listdir[index]).split('.')[0].split('_')[0]
+            txtsendname = str(listdir[index]).split('.')[0].split('_')[0] + '.txt'
             while index<range:
                   ffullpath = config.ROOT_PATH + username + '/' + listdir[index]
                   fsize = get_file_size(ffullpath)
@@ -288,7 +288,7 @@ async def onmessage(bot:TelegramClient,ev: NewMessage.Event,loop,ret=False):
                 txtfile.write('ERROR XDLINK PARSE URLS')
             txtfile.close()
             await bot.delete_messages(ev.chat,message)
-            await bot.send_file(ev.chat,txtsendname)
+            await bot.send_file(ev.chat,txtsendname,caption=f'{txtsendname}\n\n```@obisoftt```',parse_mode='Markdown')
             os.unlink(txtsendname)
         except Exception as ex:
              await bot.send_message(ev.chat.id,str(ex))
