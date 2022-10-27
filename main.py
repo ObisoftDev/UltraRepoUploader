@@ -243,6 +243,7 @@ async def onmessage(bot:TelegramClient,ev: NewMessage.Event,loop,ret=False):
             await bot.edit_message(ev.chat,message,text=f'📯Generando Session...')
             session:RepoUploader = await repouploader.create_session(config.PROXY)
             resultlist = []
+            txtsendname = str(listdir[index]).split('.')[0].split('_')[0]
             while index<range:
                   ffullpath = config.ROOT_PATH + username + '/' + listdir[index]
                   fsize = get_file_size(ffullpath)
@@ -273,13 +274,13 @@ async def onmessage(bot:TelegramClient,ev: NewMessage.Event,loop,ret=False):
                       STORE_RESULT.pop(listdir[index])
                   except:pass
                   index+=1
-            txtsendname = f'{username}.txt'
             if txtname!='':
                 txtsendname = txtname
             txtfile = open(txtsendname,'w')
             urls = []
             for item in resultlist:
                 urls.append(item.url)
+            await bot.edit_message(ev.chat,message,text=f'🔗Generando XDLinks...')
             data = xdlink.parse(urls)
             if data:
                 txtfile.write(data)
