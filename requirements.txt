@@ -2,7 +2,6 @@ telethon
 requests
 requests[socks]
 requests_toolbelt
-functools
 user_agent
 youtube_dl
 python-worker
