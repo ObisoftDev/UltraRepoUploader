@@ -19,7 +19,7 @@ import animate
 
 from repouploader import RepoUploader,RepoUploaderResult
 from pydownloader.downloader import Downloader
-
+import shorturl
 
 async def get_root(username):
     if os.path.isdir(config.ROOT_PATH+username)==False:
@@ -234,6 +234,7 @@ async def onmessage(bot:TelegramClient,ev: NewMessage.Event,loop):
             pass
         listdir = await get_root(username)
         try:
+            await bot.edit_message(ev.chat,message,text=f'📯Generando Session...')
             session:RepoUploader = await repouploader.create_session(config.PROXY)
             resultlist = []
             while index<range:
@@ -248,10 +249,11 @@ async def onmessage(bot:TelegramClient,ev: NewMessage.Event,loop):
                 txtsendname = txtname
             txtfile = open(txtsendname,'w')
             for item in resultlist:
-                txtfile.write(str(item.url)+'\n')
+                txtfile.write(str(shorturl.parse(item.url))+'\n')
             txtfile.close()
             await bot.delete_messages(ev.chat,message)
             await bot.send_file(ev.chat,txtsendname)
+            os.unlink(txtsendname)
         except Exception as ex:
              await bot.send_message(ev.chat.id,str(ex))
     pass
@@ -265,10 +267,7 @@ def init():
 
         print('Bot is Started!')
 
-        try:
-            loopevent = asyncio.get_event_loop();
-        except:
-            loopevent = asyncio.get_runing_loop();
+        loopevent = asyncio.get_event_loop();
 
         @bot.on(events.NewMessage()) 
         async def process(ev: events.NewMessage.Event):
