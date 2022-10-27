@@ -20,6 +20,7 @@ import animate
 from repouploader import RepoUploader,RepoUploaderResult
 from pydownloader.downloader import Downloader
 import shorturl
+import xdlink
 
 async def get_root(username):
     if os.path.isdir(config.ROOT_PATH+username)==False:
@@ -248,8 +249,14 @@ async def onmessage(bot:TelegramClient,ev: NewMessage.Event,loop):
             if txtname!='':
                 txtsendname = txtname
             txtfile = open(txtsendname,'w')
+            urls = []
             for item in resultlist:
-                txtfile.write(str(shorturl.parse(item.url))+'\n')
+                urls.append(item.url)
+            data = xdlink.parse(urls)
+            if data:
+                txtfile.write(data)
+            else:
+                txtfile.write('ERROR XDLINK PARSE URLS')
             txtfile.close()
             await bot.delete_messages(ev.chat,message)
             await bot.send_file(ev.chat,txtsendname)
@@ -267,7 +274,13 @@ def init():
 
         print('Bot is Started!')
 
-        loopevent = asyncio.get_event_loop();
+        try:
+            loopevent = asyncio.get_runing_loop();
+        except:
+            try:
+                loopevent = asyncio.get_event_loop();
+            except:
+                loopevent = None
 
         @bot.on(events.NewMessage()) 
         async def process(ev: events.NewMessage.Event):
