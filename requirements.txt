@@ -5,3 +5,4 @@ requests_toolbelt
 functools
 user_agent
 youtube_dl
+python-worker
