@@ -228,7 +228,10 @@ async def onmessage(bot:TelegramClient,ev: NewMessage.Event,loop):
                 index = int(cmdtokens[0])
             range = index+1
             if len(cmdtokens)>1:
-                range = int(cmdtokens[1])+1
+                try:
+                    range = int(cmdtokens[1])+1
+                except:
+                    txtname = cmdtokens[2]
             if len(cmdtokens)>2:
                 txtname = cmdtokens[2]
         except:
@@ -240,6 +243,10 @@ async def onmessage(bot:TelegramClient,ev: NewMessage.Event,loop):
             resultlist = []
             while index<range:
                   ffullpath = config.ROOT_PATH + username + '/' + listdir[index]
+                  fsize = get_file_size(ffullpath)
+                  if fsize>config.SPLIT_FILE:
+                      await bot.edit_message(ev.chat,message,text=f'{listdir[index]} Demasiado Grande, Debe Comprimir\nSe Cancelo La Subida')
+                      return
                   await bot.edit_message(ev.chat,message,text=f'⬆️Subiendo {listdir[index]}...')
                   result:RepoUploaderResult = await session.upload_file(ffullpath,progress_func=upload_progress,progress_args=(bot,ev,message,loop))
                   if result:
