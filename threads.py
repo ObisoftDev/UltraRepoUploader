@@ -39,3 +39,23 @@ class ThreadAsync(object):
             return self.tstore[name]
         except:pass
         return None
+
+class Thread(object):
+    def __init__(self,targetfunc=None,args=(),update=None):
+        self.id = createID(12)
+        self.handle = threading.Thread(target=targetfunc, args=args)
+        self.update = update
+        self.tstore = {}
+        pass
+    def start(self):
+        self.handle.start()
+    def stop(self):
+        self.handle.join()
+        pass
+    def store(self,name,obj):
+        self.tstore[name] = obj
+    def getStore(self,name):
+        try:
+            return self.tstore[name]
+        except:pass
+        return None
