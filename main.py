@@ -244,7 +244,7 @@ async def onmessage(bot:TelegramClient,ev: NewMessage.Event,loop,ret=False):
                 iindex+=1
             zipname = config.ROOT_PATH + username + '/' + zipname
             multifile = zipfile.MultiFile(zipname,config.SPLIT_FILE)
-            zip = zipfile.ZipFile(multifile, mode='w', compression=zipfile.ZIP_DEFLATED)
+            zip = zipfile.ZipFile(multifile, mode='w')
             while index<range:
                 ffullpath = config.ROOT_PATH + username + '/' + listdir[index]
                 await bot.edit_message(ev.chat,message,text=f'📚 {listdir[index]} 📚...')
