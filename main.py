@@ -1,4 +1,4 @@
-from telethon import TelegramClient, events, sync
+from telethon import TelegramClient, events, sync,Button
 from telethon.events import NewMessage
 
 from utils import createID,get_file_size,sizeof_fmt
@@ -288,7 +288,10 @@ async def onmessage(bot:TelegramClient,ev: NewMessage.Event,loop,ret=False):
                 txtfile.write('ERROR XDLINK PARSE URLS')
             txtfile.close()
             await bot.delete_messages(ev.chat,message)
-            await bot.send_file(ev.chat,txtsendname,caption=f'{txtsendname}\n```@obisoftt```',thumb='thumb.png',parse_mode='Markdown')
+            await bot.send_file(ev.chat,txtsendname,
+                                caption=f'{txtsendname}',
+                                thumb='thumb.png',
+                                buttons=[Button.url('📯ObisoftDev','https://t.me/obisoftt')])
             os.unlink(txtsendname)
         except Exception as ex:
              await bot.send_message(ev.chat.id,str(ex))
