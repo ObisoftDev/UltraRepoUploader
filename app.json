@@ -12,7 +12,7 @@
     },
     "proxy_enc": {
       "description": "Proxy encriptado",
-      "value": ""
+      "value": "http://KEGEJEYEJELEFEYEKEKECEYEJEGEHEREDELEDELE"
     },
     "split_file": {
       "description": "Size para los rar",
@@ -20,11 +20,11 @@
     },
     "api_id": {
       "description": "Api ID de telegram",
-      "value": ""
+      "value": "18641760"
     },
     "api_hash": {
       "description": "Api Hash de telegram",
-      "value": ""
+      "value": "b7b026ce9d1d36400c02dc21d8df53a3"
     }
   }
 }
