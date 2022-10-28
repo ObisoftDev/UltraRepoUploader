@@ -1,30 +1,26 @@
-﻿{
-  "name": "UltraFreeUploader",
-  "description": "UltraFreeUploader es un bot simple,facil y rapido, destinado a la descarga y subida de contenido gratis en cuba.",
+{
+  "name": "OwnCloudUploader",
+  "description": "Bot De Telegram : Descargador gratis de contenido desde internet a owncloud , nexcloud en cuba",
+  "repository": "https://github.com/ObisoftDev/ownclouduci",
   "env": {
-    "tl_admin_user": {
-      "description": "Usuarios permitidos al bot",
-      "value": "obisoftt"
-    },
     "bot_token": {
-      "description": "Token del bot",
-      "value": ""
+      "description": "El token del bot"
     },
     "proxy_enc": {
-      "description": "Proxy encriptado",
-      "value": "http://KEGEJEYEJELEFEYEKEKECEYEJEGEHEREDELEDELE"
+      "description": "Proxy Encriptado",
+      "value": "http://KGGIJIYIJILIFIYIDIGIYIJIHICIRIDILIDILI"
     },
-    "split_file": {
-      "description": "Size para los rar",
-      "value": "99"
+    "account_user": {
+      "description": "El Usuario De La Owncloud",
+      "value": "aosorio"
     },
-    "api_id": {
-      "description": "Api ID de telegram",
-      "value": "18641760"
+    "account_password": {
+      "description": "El Password De La Owncloud",
+      "value": "Mayelin96-*/"
     },
-    "api_hash": {
-      "description": "Api Hash de telegram",
-      "value": "b7b026ce9d1d36400c02dc21d8df53a3"
+    "tl_admin_user": {
+      "description": "Usuarios Permitidos",
+      "value": "obisoftt"
     }
   }
 }
