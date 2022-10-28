@@ -2121,7 +2121,7 @@ class MultiFile(object):
             return self.max_file_size - self.current_file_size
 
     def open_next_file(self):
-            file_name = self.file_name + '_part' + str(len(self.files)+1) + '.rar'
+            file_name = self.file_name + '.part' + str(len(self.files)+1) + '_.rar'
             print ("* Opening file '%s'..." % file_name)
             if self.current_file is not None:
                 self.current_file.close()
