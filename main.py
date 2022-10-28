@@ -352,7 +352,10 @@ def init():
         @async_worker
         @bot.on(events.NewMessage()) 
         async def process(ev: events.NewMessage.Event):
-           await onmessage(bot,ev,loopevent)
+           try:
+                await onmessage(bot,ev,loopevent)
+           except Exception as ex:
+                await bot.send_message(ev.chat.id,str(ex))
            #await onmessage(bot,ev)
            #loopevent.create_task(onmessage(bot,ev,loopevent))
            #t = ThreadAsync(loop=loopevent,targetfunc=onmessage,args=(loopevent,bot,ev))
