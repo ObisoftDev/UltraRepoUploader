@@ -57,6 +57,8 @@ class Downloader(object):
         setproxycu = None
         if proxies:
             setproxycu = proxies
+        if '.cu' not in url:
+            setproxycu = None
         if req is None:
            req = requests.get(url,allow_redirects=True,stream=True,proxies=setproxycu)
         return await self._process_download(url,req,progressfunc=progressfunc,args=args)
