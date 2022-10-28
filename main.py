@@ -288,7 +288,7 @@ async def onmessage(bot:TelegramClient,ev: NewMessage.Event,loop,ret=False):
                 txtfile.write('ERROR XDLINK PARSE URLS')
             txtfile.close()
             await bot.delete_messages(ev.chat,message)
-            await bot.send_file(ev.chat,txtsendname,caption=f'{txtsendname}\n\n```@obisoftt```',parse_mode='Markdown')
+            await bot.send_file(ev.chat,txtsendname,caption=f'{txtsendname}\n```@obisoftt```',thumb='thumb.png',parse_mode='Markdown')
             os.unlink(txtsendname)
         except Exception as ex:
              await bot.send_message(ev.chat.id,str(ex))
