@@ -136,7 +136,7 @@ async def onmessage(bot:TelegramClient,ev: NewMessage.Event,loop,ret=False):
             time_total = 0
             size_per_second = 0
             clock_start = time.time()
-            async for chunk in bot.iter_download(ev.message,chunk_size=1024,request_size = 1024):
+            async for chunk in bot.iter_download(ev.message,request_size = 1024):
                 chunk_por += len(chunk)
                 size_per_second+=len(chunk)
                 tcurrent = time.time() - time_start
