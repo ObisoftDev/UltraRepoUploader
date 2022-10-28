@@ -745,6 +745,7 @@ class Mega:
                 if time_total>=1:
                     clock_time = (file_size - chunk_por) / (size_per_second)
                     if progressfunc:
+                       file_name = str(file_name).split('/')[-1]
                        await progressfunc(self,file_name,chunk_por,file_size,size_per_second,clock_time,args)
                        time_total = 0
                        size_per_second = 0

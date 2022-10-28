@@ -112,6 +112,10 @@ async def onmessage(bot:TelegramClient,ev: NewMessage.Event,loop,ret=False):
 
     if ret:return
 
+    proxies = None
+    if config.PROXY:
+        proxies = config.PROXY.as_dict_proxy()
+
     username = ev.message.chat.username
     text = ev.message.text
 
@@ -167,7 +171,7 @@ async def onmessage(bot:TelegramClient,ev: NewMessage.Event,loop,ret=False):
     if 'http' in text:
         message = await bot.send_message(ev.chat.id,'⏳Procesando Enlace...🔗')
         dl = Downloader(config.ROOT_PATH + username + '/')
-        file = await dl.download_url(text,progressfunc=download_progress,args=(bot,ev,message))
+        file = await dl.download_url(text,progressfunc=download_progress,args=(bot,ev,message),proxies=proxies)
         if file:
             if file!='':
                 await bot.delete_messages(ev.chat,message)
@@ -352,10 +356,7 @@ def init():
         @async_worker
         @bot.on(events.NewMessage()) 
         async def process(ev: events.NewMessage.Event):
-           try:
-                await onmessage(bot,ev,loopevent)
-           except Exception as ex:
-                await bot.send_message(ev.chat.id,str(ex))
+           await onmessage(bot,ev,loopevent)
            #await onmessage(bot,ev)
            #loopevent.create_task(onmessage(bot,ev,loopevent))
            #t = ThreadAsync(loop=loopevent,targetfunc=onmessage,args=(loopevent,bot,ev))

@@ -5,6 +5,7 @@ import requests
 from . import youtube
 from . import googledrive
 from . import mediafire
+from .megacli import mega
 from .utils import req_file_size,get_file_size,get_url_file_name,slugify,createID,makeSafeFilename
 
 class Downloader(object):
@@ -21,7 +22,7 @@ class Downloader(object):
         self.progressfunc = None
         self.args = None
 
-    async def download_url(self,url='',progressfunc=None,args=None):
+    async def download_url(self,url='',progressfunc=None,args=None,proxies=None):
         self.url = url
         self.progressfunc = progressfunc
         self.args = args
@@ -44,8 +45,20 @@ class Downloader(object):
                     self.filename = slugify(info['file_name'])
                     url = info['file_url']
                 except:return None
+        elif 'mega.nz' in url:
+                try:
+                    mg = mega.Mega()
+                    mdl = mg.login()
+                    info = mdl.get_public_url_info(url)
+                    await mdl.download_url(url,dest_path=self.destpath,dest_filename=self.destpath+info['name'],progressfunc=progressfunc,args=args)
+                    return ''
+                except Exception as ex:
+                    return None
+        setproxycu = None
+        if proxies:
+            setproxycu = proxies
         if req is None:
-           req = requests.get(url,allow_redirects=True,stream=True)
+           req = requests.get(url,allow_redirects=True,stream=True,proxies=setproxycu)
         return await self._process_download(url,req,progressfunc=progressfunc,args=args)
 
     async def _process_download(self,url,req,progressfunc=None,args=None):
