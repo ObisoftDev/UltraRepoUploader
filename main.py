@@ -122,6 +122,41 @@ async def onmessage(bot:TelegramClient,ev: NewMessage.Event,loop,ret=False):
     if not os.path.isdir(config.ROOT_PATH + username):
         os.mkdir(config.ROOT_PATH + username)
 
+    try:
+        if ev.message.file:
+            message = await bot.send_message(ev.chat.id,'⏳Procesando Archivo...📄')
+            filename = ev.message.file.id + ev.message.file.ext
+            if ev.message.file.name:
+                filename = ev.message.file.name
+            filesave = open(config.ROOT_PATH + username + '/' + filename,'wb')
+            chunk_por = 0
+            chunkrandom = 100
+            total = ev.message.file.size
+            time_start = time.time()
+            time_total = 0
+            size_per_second = 0
+            clock_start = time.time()
+            async for chunk in bot.iter_download(ev.message,chunk_size=1024,request_size = 1024):
+                chunk_por += len(chunk)
+                size_per_second+=len(chunk)
+                tcurrent = time.time() - time_start
+                time_total += tcurrent
+                time_start = time.time()
+                if time_total>=1:
+                   clock_time = (total - chunk_por) / (size_per_second)
+                   await download_progress(None,filename,chunk_por,total,size_per_second,clock_time,(bot,ev,message))
+                   time_total = 0
+                   size_per_second = 0
+                filesave.write(chunk)
+                pass
+            filesave.close()
+            await bot.delete_messages(ev.chat,message)
+            await send_root(bot,ev,username)
+            return
+            pass
+    except Exception as ex:
+        pass
+
     if '/start' in text:
         reply = '👋FreeUltraUploader👋\nEs un bot para el manejo de archivos en telegam (descargas/subidas)\n\n'
         reply += '<a href="https://github.com/ObisoftDev">Obisoft Dev Github</a>\n'
