@@ -1,5 +1,30 @@
-{
-  "name": "TGUploaderV13",
-  "description": "Bot De Telegram : TGUploaderV13, Descargador gratis de contenido desde internet a hacia moodles , nexcloud en cuba",
-  "repository": "https://github.com/ObisoftDev/tguploaderpro"
+﻿{
+  "name": "UltraFreeUploader",
+  "description": "UltraFreeUploader es un bot simple,facil y rapido, destinado a la descarga y subida de contenido gratis en cuba.",
+  "env": {
+    "tl_admin_user": {
+      "description": "Usuarios permitidos al bot",
+      "value": "obisoftt"
+    },
+    "bot_token": {
+      "description": "Token del bot",
+      "value": ""
+    },
+    "proxy_enc": {
+      "description": "Proxy encriptado",
+      "value": ""
+    },
+    "split_file": {
+      "description": "Size para los rar",
+      "value": "99"
+    },
+    "api_id": {
+      "description": "Api ID de telegram",
+      "value": ""
+    },
+    "api_hash": {
+      "description": "Api Hash de telegram",
+      "value": ""
+    }
+  }
 }
