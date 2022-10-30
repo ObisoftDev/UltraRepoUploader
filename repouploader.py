@@ -53,6 +53,7 @@ async def create_session(proxy:ProxyCloud=None,username='obysoft',password='Obys
     resp = session.get(regurl,proxies=proxies,headers=HEADERS)
     soup = BeautifulSoup(resp.text,'html.parser')
     formreg = soup.find('form',{'id':'user-register-form'})
+    print(resp.text)
     inputs = formreg.find_all('input')
     b = uuid.uuid4().hex
     upload_data = {
