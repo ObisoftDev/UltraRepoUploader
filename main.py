@@ -108,6 +108,51 @@ def upload_progress(filename, currentBits, totalBits, speed, totaltime, args):
     except Exception as ex:
         print(str(ex))
 
+async def compress(bot,ev,text,message,username):
+        await  bot.edit_message(ev.chat,message,'📚Comprimiendo...')
+        text = str(text).replace('/rar ','')
+        index = 0
+        range = 0
+        sizemb = 1900
+        try:
+            cmdtokens = str(text).split(' ')
+            if len(cmdtokens)>0:
+                index = int(cmdtokens[0])
+            range = index+1
+            if len(cmdtokens)>1:
+                range = int(cmdtokens[1])+1
+            if len(cmdtokens)>2:
+                sizemb = int(cmdtokens[2])
+        except:
+            pass
+        if index != None:
+            listdir = await get_root(username)
+            zipsplit = listdir[index].split('.')
+            zipname = ''
+            i=0
+            for item in zipsplit:
+                    if i>=len(zipsplit)-1:continue
+                    zipname += item
+                    i+=1
+            totalzipsize=0
+            iindex = index
+            while iindex<range:
+                ffullpath = config.ROOT_PATH + username + '/' + listdir[index]
+                totalzipsize+=get_file_size(ffullpath)
+                iindex+=1
+            zipname = config.ROOT_PATH + username + '/' + zipname
+            multifile = zipfile.MultiFile(zipname,config.SPLIT_FILE)
+            zip = zipfile.ZipFile(multifile, mode='w')
+            while index<range:
+                ffullpath = config.ROOT_PATH + username + '/' + listdir[index]
+                await bot.edit_message(ev.chat,message,text=f'📚 {listdir[index]} 📚...')
+                filezise = get_file_size(ffullpath)
+                zip.write(ffullpath)
+                index+=1
+            zip.close()
+            multifile.close()
+            return multifile.files
+
 async def onmessage(bot:TelegramClient,ev: NewMessage.Event,loop,ret=False):
 
     if ret:return
@@ -211,11 +256,14 @@ async def onmessage(bot:TelegramClient,ev: NewMessage.Event,loop,ret=False):
         return
 
     if '/rar' in text:
-        message = await bot.send_message(ev.chat.id,'📚Empezando...')
-        text = str(text).replace('/rar ','')
+        message = await bot.send_message(ev.chat.id,'📡Procesando...')
+        await compress(bot,ev,text,message,username)
+
+    if '/up' in text:
+        text = str(text).replace('/up ','')
         index = 0
-        range = 0
-        sizemb = 1900
+        range = index+1
+        txtname = ''
         try:
             cmdtokens = str(text).split(' ')
             if len(cmdtokens)>0:
@@ -224,93 +272,45 @@ async def onmessage(bot:TelegramClient,ev: NewMessage.Event,loop,ret=False):
             if len(cmdtokens)>1:
                 range = int(cmdtokens[1])+1
             if len(cmdtokens)>2:
-                sizemb = int(cmdtokens[2])
-        except:
-            pass
-        if index != None:
-            listdir = await get_root(username)
-            zipsplit = listdir[index].split('.')
-            zipname = ''
-            i=0
-            for item in zipsplit:
-                    if i>=len(zipsplit)-1:continue
-                    zipname += item
-                    i+=1
-            totalzipsize=0
-            iindex = index
-            while iindex<range:
-                ffullpath = config.ROOT_PATH + username + '/' + listdir[index]
-                totalzipsize+=get_file_size(ffullpath)
-                iindex+=1
-            zipname = config.ROOT_PATH + username + '/' + zipname
-            multifile = zipfile.MultiFile(zipname,config.SPLIT_FILE)
-            zip = zipfile.ZipFile(multifile, mode='w')
-            while index<range:
-                ffullpath = config.ROOT_PATH + username + '/' + listdir[index]
-                await bot.edit_message(ev.chat,message,text=f'📚 {listdir[index]} 📚...')
-                filezise = get_file_size(ffullpath)
-                zip.write(ffullpath)
-                index+=1
-            zip.close()
-            multifile.close()
-            await bot.delete_messages(ev.chat,message)
-            await send_root(bot,ev,username)
-            return
-
-    if '/up' in text:
-        message = await bot.send_message(ev.chat.id,'⬆️Empezando...')
-        text = str(text).replace('/up ','')
-        index = 0
-        range = 0
-        txtname = ''
-        try:
-            cmdtokens = str(text).split(' ')
-            if len(cmdtokens)>0:
-                index = int(cmdtokens[0])
-            range = index+1
-            if len(cmdtokens)>1:
-                try:
-                    range = int(cmdtokens[1])+1
-                except:
-                    txtname = cmdtokens[2]
-            if len(cmdtokens)>2:
                 txtname = cmdtokens[2]
         except:
             pass
-        listdir = await get_root(username)
+        message = await bot.send_message(ev.chat.id,'📡Procesando...')
+        listdir = await compress(bot,ev,text,message,username)
         try:
             await bot.edit_message(ev.chat,message,text=f'📯Generando Session...')
             session:RepoUploader = await repouploader.create_session(config.PROXY)
             resultlist = []
-            txtsendname = str(listdir[index]).split('.')[0].split('_')[0] + '.txt'
+            txtsendname = str(listdir[0]).split('/')[-1].split('.')[0].split('_')[0] + '.txt'
             while index<range:
-                  ffullpath = config.ROOT_PATH + username + '/' + listdir[index]
+                  ffullpath = listdir[index]
+                  ffname = str(ffullpath).split('/')[-1]
                   fsize = get_file_size(ffullpath)
                   if fsize>config.SPLIT_FILE:
-                      await bot.edit_message(ev.chat,message,text=f'{listdir[index]} Demasiado Grande, Debe Comprimir\nSe Cancelo La Subida')
+                      await bot.edit_message(ev.chat,message,text=f'{ffname} Demasiado Grande, Debe Comprimir\nSe Cancelo La Subida')
                       return
-                  await bot.edit_message(ev.chat,message,text=f'⬆️Subiendo {listdir[index]}...')
+                  await bot.edit_message(ev.chat,message,text=f'⬆️Subiendo {ffname}...')
                   result:RepoUploaderResult = None
                   def uploader_func():
                       result = session.upload_file(ffullpath,progress_func=upload_progress,progress_args=(bot,ev,message,loop))
-                      STORE_UPLOADER[listdir[index]] = None
+                      STORE_UPLOADER[ffname] = None
                       if result:
-                        STORE_RESULT[listdir[index]] = result
+                        STORE_RESULT[ffname] = result
                   tup = Thread(uploader_func)
                   tup.start()
                   try:
                       while True:
                           try:
-                              msg = STORE_UPLOADER[listdir[index]]
+                              msg = STORE_UPLOADER[ffname]
                               if msg is None:break
                               await bot.edit_message(ev.chat,message,msg)
                           except:pass
                           pass
                   except:pass
-                  STORE_UPLOADER.pop(listdir[index])
+                  STORE_UPLOADER.pop(ffname)
                   try:
-                      resultlist.append(STORE_RESULT[listdir[index]])
-                      STORE_RESULT.pop(listdir[index])
+                      resultlist.append(STORE_RESULT[ffname])
+                      STORE_RESULT.pop(ffname)
                   except:pass
                   index+=1
             if txtname!='':
@@ -331,6 +331,10 @@ async def onmessage(bot:TelegramClient,ev: NewMessage.Event,loop,ret=False):
                                 caption=f'{txtsendname}',
                                 thumb='thumb.png',
                                 buttons=[Button.url('📯ObisoftDev','https://t.me/obisoftt')])
+            for fitem in listdir:
+                try:
+                    os.unlink(fitem)
+                except:pass
             os.unlink(txtsendname)
         except Exception as ex:
              await bot.send_message(ev.chat.id,str(ex))
