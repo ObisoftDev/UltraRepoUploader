@@ -282,9 +282,9 @@ async def onmessage(bot:TelegramClient,ev: NewMessage.Event,loop,ret=False):
             session:RepoUploader = await repouploader.create_session(config.PROXY)
             resultlist = []
             txtsendname = str(listdir[0]).split('/')[-1].split('.')[0].split('_')[0] + '.txt'
-            while index<range:
-                  ffullpath = listdir[index]
-                  ffname = str(ffullpath).split('/')[-1]
+            for fi in listdir:
+                  ffullpath = fi
+                  ffname = str(fi).split('/')[-1]
                   fsize = get_file_size(ffullpath)
                   if fsize>config.SPLIT_FILE:
                       await bot.edit_message(ev.chat,message,text=f'{ffname} Demasiado Grande, Debe Comprimir\nSe Cancelo La Subida')
